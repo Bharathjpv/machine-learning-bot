@@ -10,7 +10,6 @@ app.config.from_object(config.config['development'])
 def index():
     if request.method == 'POST':
         prompt = request.form['prompt']
-        print('---------------')
         res = {}
         res['answer'] = aiapi.generateChatResponse(prompt)
         return jsonify(res), 200
