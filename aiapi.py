@@ -1,45 +1,61 @@
-# import openai
 # import config
 
-# openai.api_key = config.DevelopmentConfig.OPENAI_KEY
+# from langchain.llms import OpenAI
+# from langchain.chains import LLMChain
+# from langchain.prompts import PromptTemplate
+
+# openai_api_key = config.DevelopmentConfig.OPENAI_KEY
+
+# template = """Your name is alex and you help customers of Happy face online retail to solve their issues regarding their orders.
+
+# %MESSAGE
+# {message}
+
+# YOUR RESPONSE:
+# """
+
+# prompt_template = PromptTemplate(input_variables=["message"], template=template)
+# llm = OpenAI(temperature=1, openai_api_key=openai_api_key)
 
 # def generateChatResponse(prompt):
+#     chain = LLMChain(llm=llm, prompt=prompt_template)
 
-#     messages = []
-#     messages.append({"role": "system", "content": "You are a helpful assistant."})
+#     answer = chain.run(prompt)
+#     return answer.replace('\n', '<br>')
 
-#     question = {}
-#     question['role'] = 'user'
-#     question['content'] = prompt
-#     messages.append(question)
-#     response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)
-#     try:
-#         ans = response['choices'][0]['message']['content'].replace('\n', '<br>')
-#     except:
-#         ans = "No response. Try again"
-
-#     return ans
 import config
 
-from langchain.llms import OpenAI
+from langchain.chat_models.openai import ChatOpenAI
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
+from langchain.memory import ConversationBufferMemory
+
+from langchain.vectorstores import FAISS
+from langchain.chains import RetrievalQA
+from langchain.document_loaders import TextLoader
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.chains import ConversationalRetrievalChain
 
 openai_api_key = config.DevelopmentConfig.OPENAI_KEY
 
-template = """Your name is alex and you help customers of Happy face online retail to solve their issues regarding their orders.
+embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
 
-%MESSAGE
-{message}
+loader = TextLoader('text.txt')
+docs = loader.load()
 
-YOUR RESPONSE:
-"""
+db = FAISS.from_documents(docs, embeddings)
 
-prompt_template = PromptTemplate(input_variables=["message"], template=template)
-llm = OpenAI(temperature=1, openai_api_key=openai_api_key)
+memory = ConversationBufferMemory(memory_key='chat_history', return_messages=False)
+
+qa_chain = ConversationalRetrievalChain.from_llm(
+            llm=ChatOpenAI(temperature=.5, openai_api_key=openai_api_key,request_timeout=15),
+            retriever=db.as_retriever(),
+            memory=memory,
+            get_chat_history=lambda h: h,
+            chain_type='stuff'
+        )
 
 def generateChatResponse(prompt):
-    chain = LLMChain(llm=llm, prompt=prompt_template)
 
-    answer = chain.run(prompt)
-    return answer.replace('\n', '<br>')
+    answer = qa_chain(prompt)['answer']
+    return answer
