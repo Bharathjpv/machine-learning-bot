@@ -6,7 +6,6 @@ class Config(object):
     TESTING = False
 
 class DevelopmentConfig(Config):
-    SECRET_KEY = "this-is-a-super-secret-key"
     OPENAI_KEY = ""
 
 config = {
@@ -14,6 +13,3 @@ config = {
     'testing': DevelopmentConfig,
     'production': DevelopmentConfig
 }
-
-# class DevConfig():
-#     OPENAI_KEY = ''

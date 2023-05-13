@@ -1,6 +1,9 @@
 *.ipynb
 data.txt
 demo.py
+
+logs
+conversations
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
