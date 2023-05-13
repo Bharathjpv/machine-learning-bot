@@ -3,19 +3,22 @@ import aiapi
 import config
 from langchain.prompts import PromptTemplate
 
+from src.api.prompt import Prompt
+
 app = Flask(__name__)
 app.config.from_object(config.config['development'])
 abc = 0
-template = """
-Your a customer care excutive and your name is Alex from Happy Face online retail.
-Your name is alex.
+# template = """
+# Your a customer care excutive and your name is Alex from Happy Face online retail.
+# Your name is alex.
 
-{chat_history}
-Human: {human_input}
-Chatbot:"""
+# {chat_history}
+# Human: {human_input}
+# Chatbot:"""
 
-prompt = PromptTemplate(input_variables=["chat_history","human_input"], template=template)
+# prompt = PromptTemplate(input_variables=["chat_history","human_input"], template=template)
 
+prompt = Prompt().GeneratePrompt()
 @app.route('/', methods = ['POST', 'GET'])
 def index():
     global abc

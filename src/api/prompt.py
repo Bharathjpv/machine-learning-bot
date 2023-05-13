@@ -24,6 +24,8 @@ class Prompt:
         returns:
         prompt to the bot
         '''
+
+        logging.info("Enterring into the GeneratePrompt method")
         try:
             prompt = PromptTemplate(input_variables=["chat_history","human_input"], template=template)
 
