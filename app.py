@@ -25,7 +25,7 @@ def index():
     if request.method == 'POST':
         
         if abc == 0:
-            prompts = request.form['prompt']
+            prompts = request.form['prompt'] 
             query = prompt.format(human_input= prompts, chat_history= [])
             abc = 1
             res = {}
